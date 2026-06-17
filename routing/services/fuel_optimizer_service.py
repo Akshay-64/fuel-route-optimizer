@@ -74,10 +74,23 @@ class FuelOptimizerService:
             gallons_needed * average_price
         )
 
+        fuel_stops = []
+
+        for _, row in selected_stops.iterrows():
+            fuel_stops.append(
+                {
+                    "truckstop_name": row["Truckstop Name"],
+                    "city": row["City"].strip(),
+                    "state": row["State"],
+                    "retail_price": round(
+                        float(row["Retail Price"]),
+                        3
+                    ),
+                }
+            )
+
         return {
-            "fuel_stops": selected_stops.to_dict(
-                orient="records"
-            ),
+            "fuel_stops": fuel_stops,
             "gallons_needed": round(
                 gallons_needed,
                 2
