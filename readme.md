@@ -2,152 +2,171 @@
 
 ## Overview
 
-Fuel Route Optimizer is a Django REST API that calculates the most cost-effective fuel stops along a driving route within the United States.
+Fuel Route Optimizer is a Django REST API that calculates cost-effective fuel stops for a road trip within the United States.
 
-Given a start location and a destination, the API:
+The API:
 
-* Calculates the driving route.
-* Identifies fuel stations located along or near the route.
-* Determines optimal refueling stops based on fuel prices.
-* Supports multiple fuel stops for long-distance trips.
-* Estimates total fuel cost assuming:
-
-  * Vehicle range: 500 miles
-  * Fuel efficiency: 10 MPG
-
-The solution is designed to minimize external API usage and provide fast responses through route caching and local fuel price processing.
+* Accepts a start and destination location
+* Generates a route using a free routing service
+* Identifies optimal fuel stops based on fuel prices
+* Calculates fuel consumption and estimated fuel cost
+* Returns trip distance and duration
 
 ---
 
-## Assignment Requirements
+## Features
 
-### Input
-
-```json
-{
-  "start": "Atlanta, GA",
-  "finish": "Chicago, IL"
-}
-```
-
-### Output
-
-```json
-{
-  "distance_miles": 715,
-  "fuel_stops": [],
-  "total_fuel_cost": 0,
-  "route": {}
-}
-```
+* Route generation between two US locations
+* Fuel stop recommendations
+* Fuel cost estimation
+* CSV-based fuel price analysis
+* REST API using Django REST Framework
 
 ---
 
-## Technology Stack
+## Tech Stack
 
-* Python 3.x
-* Django 5.x
+* Python 3.11
+* Django
 * Django REST Framework
-* PostgreSQL
-* Redis (Caching)
 * Pandas
-* Shapely
-* OpenRouteService API
+* OSRM Routing API
+* OpenStreetMap Nominatim Geocoding API
 
 ---
 
-## Data Source
-
-Fuel pricing data is provided through the supplied CSV file.
-
-The dataset contains:
-
-* Truckstop ID
-* Truckstop Name
-* Address
-* City
-* State
-* Retail Fuel Price
-
-Since geographic coordinates are not included, a preprocessing step will enrich the dataset with latitude and longitude information.
-
----
-
-## Planned Architecture
+## Project Structure
 
 ```text
-Client
-   |
-   v
-Django REST API
-   |
-   +--> Route Service
-   |        |
-   |        +--> OpenRouteService
-   |
-   +--> Fuel Optimization Engine
-   |
-   +--> Fuel Price Dataset
-   |
-   +--> Redis Cache
+routing/
+├── services/
+│   ├── geocoding_service.py
+│   ├── route_service.py
+│   ├── fuel_data_service.py
+│   ├── candidate_station_service.py
+│   └── fuel_optimizer_service.py
+├── serializers.py
+├── urls.py
+└── views.py
+
+data/
+└── fuel-prices-clean.csv
+
+scripts/
+└── test_*.py
+```
+
+## Assumptions
+
+* Vehicle range is 500 miles per full tank.
+* Vehicle fuel efficiency is 10 MPG.
+* Fuel prices are sourced from the supplied CSV file.
+* Route states are currently supplied in the API request.
+* Cheapest stations within route states are selected as candidate fuel stops.
+
+---
+
+## Installation
+
+Clone repository:
+
+```bash
+git clone <repository-url>
+cd fuel-optimizer
+```
+
+Create virtual environment:
+
+```bash
+python -m venv venv
+```
+
+Activate virtual environment:
+
+Windows:
+
+```bash
+venv\Scripts\activate
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run server:
+
+```bash
+python manage.py runserver
 ```
 
 ---
 
-## Fuel Optimization Strategy
+## API Endpoint
 
-Vehicle assumptions:
+### Optimize Route
 
-* Maximum range: 500 miles
-* Fuel economy: 10 MPG
-
-The application will:
-
-1. Retrieve the route.
-2. Identify fuel stations near the route.
-3. Determine reachable stations within the current fuel range.
-4. Select cost-effective refueling locations.
-5. Calculate total fuel cost for the trip.
-
----
-
-## Performance Considerations
-
-* Route results will be cached.
-* Fuel station data will be processed locally.
-* Only one routing API call will be used per unique route whenever possible.
-* Geocoding will occur during preprocessing rather than during route requests.
-
----
-
-## Project Status
-
-Current Phase:
-
-* [x] Project Initialization
-* [ ] Django Setup
-* [ ] Routing API Integration
-* [ ] Fuel Data Enrichment
-* [ ] Fuel Optimization Engine
-* [ ] API Development
-* [ ] Testing
-* [ ] Dockerization
-* [ ] Loom Demonstration
-
----
-
-## Repository Structure (Planned)
+**POST**
 
 ```text
-fuel-route-optimizer/
-│
-├── fuel_route_optimizer/
-├── routing/
-├── data/
-├── tests/
-├── docker-compose.yml
-├── requirements.txt
-└── README.md
+/api/routes/optimize/
 ```
 
+### Request
+
+```json
+{
+  "start": "Dallas, TX",
+  "finish": "Chicago, IL",
+  "route_states": ["TX", "OK", "MO", "IL"]
+}
+```
+
+### Response
+
+```json
+{
+  "start": "Dallas, TX",
+  "finish": "Chicago, IL",
+  "distance_miles": 966.45,
+  "duration_hours": 17.09,
+  "gallons_needed": 96.65,
+  "total_cost": 280.17,
+  "fuel_stops": [
+    {
+      "truckstop_name": "RAPID ROBERTS #123",
+      "city": "Springfield",
+      "state": "MO",
+      "retail_price": 2.899
+    }
+  ]
+}
+```
+
+---
+
+## Optimization Logic
+
+1. Convert locations into coordinates using Nominatim.
+2. Generate route using OSRM.
+3. Calculate trip distance.
+4. Determine required fuel stops using:
+
+   * Vehicle Range = 500 miles
+   * Fuel Efficiency = 10 MPG
+5. Select cost-effective stations from the provided fuel dataset.
+6. Calculate estimated fuel cost.
+
+---
+
+## Future Improvements
+
+* Automatically derive route states from route geometry.
+* Geocode all fuel stations for precise route matching.
+* Add caching for frequently requested routes.
+* Add database-backed spatial queries.
+* Support different vehicle fuel efficiencies.
+
+---
 
