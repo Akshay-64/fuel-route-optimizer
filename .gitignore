@@ -17,6 +17,9 @@ dist/
 downloads/
 eggs/
 .eggs/
+.env
+.env.*
+!.env.example
 lib/
 lib64/
 parts/
