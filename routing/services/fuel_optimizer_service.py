@@ -1,3 +1,18 @@
+"""
+FuelOptimizerService
+
+Responsibilities:
+- Calculates fuel requirements.
+- Determines how many fuel stops are needed.
+- Selects cost-effective fuel stations.
+- Calculates estimated fuel cost.
+
+Assumptions:
+- Vehicle range = 500 miles.
+- Fuel efficiency = 10 MPG.
+"""
+
+
 import math
 
 from routing.services.candidate_station_service import (

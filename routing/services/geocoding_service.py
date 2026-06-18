@@ -1,3 +1,13 @@
+"""
+GeocodingService
+
+Responsibilities:
+- Converts user-provided location names into coordinates.
+- Uses OpenStreetMap Nominatim API.
+- Validates that locations are within the United States.
+- Returns longitude and latitude for routing.
+"""
+
 import requests
 
 

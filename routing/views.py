@@ -1,3 +1,18 @@
+"""
+FuelOptimizerService
+
+Responsibilities:
+- Calculates fuel requirements.
+- Determines how many fuel stops are needed.
+- Selects cost-effective fuel stations.
+- Calculates estimated fuel cost.
+
+Assumptions:
+- Vehicle range = 500 miles.
+- Fuel efficiency = 10 MPG.
+"""
+
+
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView

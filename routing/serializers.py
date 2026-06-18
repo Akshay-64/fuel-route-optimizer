@@ -1,3 +1,12 @@
+"""
+RouteOptimizationSerializer
+
+Responsibilities:
+- Validates incoming API requests.
+- Ensures required fields are present.
+- Accepts start location, finish location, and route states.
+"""
+
 from rest_framework import serializers
 
 

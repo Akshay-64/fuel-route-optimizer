@@ -1,4 +1,14 @@
 from pathlib import Path
+"""
+FuelDataService
+
+Responsibilities:
+- Loads the supplied fuel price CSV.
+- Cleans and prepares fuel station data.
+- Creates a full address field for stations.
+- Provides a reusable DataFrame for optimization logic.
+"""
+
 
 import pandas as pd
 

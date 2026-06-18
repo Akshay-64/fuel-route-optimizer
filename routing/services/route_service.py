@@ -1,3 +1,13 @@
+"""
+RouteService
+
+Responsibilities:
+- Generates routes between two coordinates.
+- Uses the free OSRM routing service.
+- Returns route distance, duration, and geometry.
+- Only requires a single routing API call.
+"""
+
 import requests
 
 

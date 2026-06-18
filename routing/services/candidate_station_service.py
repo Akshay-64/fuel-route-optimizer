@@ -1,3 +1,13 @@
+"""
+CandidateStationService
+
+Responsibilities:
+- Filters stations based on states along the route.
+- Identifies low-cost candidate stations.
+- Provides the cheapest stations for optimization.
+"""
+
+
 from routing.services.fuel_data_service import FuelDataService
 
 
