@@ -23,10 +23,8 @@ class RouteOptimizationView(APIView):
 
     def post(self, request):
 
-        serializer = (
-            RouteOptimizationSerializer(
-                data=request.data
-            )
+        serializer = RouteOptimizationSerializer(
+            data=request.data
         )
 
         serializer.is_valid(
@@ -45,17 +43,28 @@ class RouteOptimizationView(APIView):
             GeocodingService()
         )
 
-        start_coordinates = (
-            geocoding_service.get_coordinates(
-                start
-            )
-        )
+        try:
 
-        finish_coordinates = (
-            geocoding_service.get_coordinates(
-                finish
+            start_coordinates = (
+                geocoding_service.get_coordinates(
+                    start
+                )
             )
-        )
+
+            finish_coordinates = (
+                geocoding_service.get_coordinates(
+                    finish
+                )
+            )
+
+        except ValueError as e:
+
+            return Response(
+                {
+                    "error": str(e)
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         route_service = RouteService()
 
@@ -93,18 +102,15 @@ class RouteOptimizationView(APIView):
                 "finish": finish,
                 "distance_miles": distance_miles,
                 "duration_hours": duration_hours,
-                "gallons_needed":
-                    optimization_result[
-                        "gallons_needed"
-                    ],
-                "total_cost":
-                    optimization_result[
-                        "total_cost"
-                    ],
-                "fuel_stops":
-                    optimization_result[
-                        "fuel_stops"
-                    ]
+                "gallons_needed": optimization_result[
+                    "gallons_needed"
+                ],
+                "total_cost": optimization_result[
+                    "total_cost"
+                ],
+                "fuel_stops": optimization_result[
+                    "fuel_stops"
+                ]
             },
             status=status.HTTP_200_OK
         )
